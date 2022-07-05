@@ -1,7 +1,7 @@
 
 locals {
-  region     = data.aws_region.current.name
-  domian_name = ""
+ 
+  domain_name = "eoe-edu-dev-codeartifact-domain"
  
 
 

@@ -1,4 +1,4 @@
-resource "aws_codeartifact_domain_permissions_policy" "domain__policy1" {
+resource "aws_codeartifact_domain_permissions_policy" "domain_policy1" {
   domain          = aws_codeartifact_domain.domain1.domain
   policy_document = <<EOF
 {
@@ -27,7 +27,7 @@ resource "aws_codeartifact_repository_permissions_policy" "repo_policy1" {
             "Action": "codeartifact:CreateRepository",
             "Effect": "Allow",
             "Principal": "*",
-            "Resource": "${local.secretariat}-${local.agency}-${local.environment}-codeartifact_repository-*" 
+            "Resource": "${aws_codeartifact_domain.domain1.arn}"
         }
     ]
 }

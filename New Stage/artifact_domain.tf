@@ -11,5 +11,7 @@ resource "aws_codeartifact_domain" "domain1" {
   createdby = local.createdby
   environment = local.environment
   groupname =local.groupname
+  terraform_managed = "yes"
+ tftemplatepath = "https://github.com/executive-office-of-education/CloudAdministration/tree/templates-terraform/${local.relative_path}"
   }
 }
