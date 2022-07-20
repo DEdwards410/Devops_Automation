@@ -1,0 +1,61 @@
+
+version: 0.2
+phases:
+  build:
+    commands:
+      - "printf 'version: 0.0\nResources:\n  - TargetService:\n  Type: AWS::ECS::Service\n  Properties:\n  ;TaskDefinition: <TASK_DEFINITION>\n  LoadBalancerInfo:\n  ContainerName: \"${container_name}\"\n  ContainerPort: ${container_port}' > appspec.yaml"
+      - aws ecs describe-task-definition --output json --task-definition ${task_definition} --query taskDefinition > template.json
+      - jq '.containerDefinitions | map((select(.name == "${container_name}") | .image) |= "<IMAGE1_NAME>") | {"containerDefinitions":.}' template.json > template2.json
+      - jq -s '.[0] * .[1]' template.json template2.json > taskdef.json
+artifacts:
+  files:
+    - imageDetail.json
+    - appspec.yaml
+    - taskdef.json
+
+
+
+
+
+
+
+
+
+# version: 0.2
+# phases:
+#   pre_build:
+#     commands:
+#       - echo Logging in to Amazon ECR...
+#       - aws --version
+#       - echo $AWS_DEFAULT_REGION
+#       - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+#       - REPOSITORY_URI=<ECR_REPO_URI>
+#       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+#       - IMAGE_TAG=${COMMIT_HASH:=latest}
+#       ##
+#   build:
+#     commands:
+#       - echo Build started on `date`
+#       - echo Building the Docker image...
+#       - docker build -t $REPOSITORY_URI:latest .
+#       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+#   post_build:
+#     commands:
+#       - echo Build completed on `date`
+#       - echo Pushing the Docker image...
+#       - docker push $REPOSITORY_URI:latest
+#       - docker push $REPOSITORY_URI:$IMAGE_TAG
+#       - printf '{"ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG > imageDetail.json
+# artifacts:
+#   files:
+#     - 'image*.json'
+#     - 'appspec.yml'
+#     - 'taskdef.json'
+#   secondary-artifacts:
+#     DefinitionArtifact:
+#       files:
+#         - appspec.yml
+#         - taskdef.json
+#     ImageArtifact:
+#       files:
+#         - imageDetail.json
